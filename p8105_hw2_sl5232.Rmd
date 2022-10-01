@@ -15,8 +15,8 @@ library(readxl)
 
 Import data from `NYC_Transit_Subway_Entrance_And_Exit_Data.csv`. Then clean variable names and selects the interested column of variables. Using the `recode()` argument to change the entry variable from `YES` / `NO` to a logical variable. Also change the route 8-11 data type from double to character as the route 1-7 data.
 
-```{r }
-Transit_df = 
+```{r chunk_clean}
+transit_df = 
   read_csv(
     "data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
     col_types = cols(Route8 = "c", Route9 = "c", Route10 = "c", Route11 = "c")) %>% 
@@ -32,8 +32,8 @@ These data are not tidy, after the cleaning above, the current dataset contains 
 
 To find out the number of unique stations, select station name and line and use `distinct()` to find all unique combinations that each represents a unique station. The number of rows represent the number of unique stations.
 
-```{r}
-Transit_df %>% 
+```{r chunk_unique}
+transit_df %>% 
   select(station_name, line) %>% 
   distinct
 ```
@@ -42,8 +42,8 @@ Turns out, there are 465 unique stations.
 
 To find out the number of ADA compliant stations, filter `ada == TRUE` first and then select unique stations the same as before. The number of rows represent the number of ADA compliant stations.
 
-```{r}
-Transit_df %>% 
+```{r chunk_ADA}
+transit_df %>% 
   filter(ada == TRUE) %>% 
   select(station_name, line) %>% 
   distinct
@@ -53,8 +53,8 @@ Turns out, there are 84 ADA compliant stations.
 
 To find out the proportion of station entrances / exits without vending allow entrance, first filter stations that don't allow vending, and then take the mean of the `entry` variable. The result is the parameter of interest.
 
-```{r}
-Transit_df %>% 
+```{r chunk_proportion}
+transit_df %>% 
   filter(vending == "NO") %>% 
   pull(entry) %>% 
   mean
@@ -62,3 +62,24 @@ Transit_df %>%
 
 Turns out, the proportion of station entrances / exits without vending allow entrance is about 0.377
 
+Reformat data so that route number and route name are distinct variables, then identify stations that serve the A train and how many of those are ADA compliant using the `filter`, `select`, and `distinct` arguments.
+
+```{r chunk_reformat}
+reformat_df = transit_df %>% 
+  pivot_longer(
+    route1:route11,
+    names_to = "route_number",
+    values_to = "route") 
+
+reformat_df %>%   
+  filter(route == "A") %>% 
+  select(station_name, line) %>% 
+  distinct
+
+reformat_df %>% 
+  filter(route == "A", ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+Turns out, there are 60 stations that serve the A train and 17 stations that serve the A train while being ADA compliant.
