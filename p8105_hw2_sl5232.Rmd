@@ -1,0 +1,12 @@
+---
+title: "Homework 2"
+author: "Shangsi Lin"
+date: "2022/10/01"
+output: github_document
+
+---
+
+```{r load_libraries, message = FALSE}
+library(tidyverse)
+library(readxl)
+```
