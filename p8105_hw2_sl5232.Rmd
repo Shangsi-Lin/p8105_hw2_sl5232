@@ -28,9 +28,37 @@ Transit_df =
   mutate(entry = recode(entry, "YES" = TRUE, "NO" = FALSE))
 ```
 
+These data are not tidy, after the cleaning above, the current dataset contains variables including line, station name, station latitude, station longitude, route information, entry, exit only or not, vending, entrance type, and ADA compliance. The dataset dimension is 1868 x 20. It would be helpful to change rount numbers and route as variables for investigations interested on specific routes.
 
+To find out the number of unique stations, select station name and line and use `distinct()` to find all unique combinations that each represents a unique station. The number of rows represent the number of unique stations.
 
 ```{r}
-
+Transit_df %>% 
+  select(station_name, line) %>% 
+  distinct
 ```
+
+Turns out, there are 465 unique stations.
+
+To find out the number of ADA compliant stations, filter `ada == TRUE` first and then select unique stations the same as before. The number of rows represent the number of ADA compliant stations.
+
+```{r}
+Transit_df %>% 
+  filter(ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+Turns out, there are 84 ADA compliant stations.
+
+To find out the proportion of station entrances / exits without vending allow entrance, first filter stations that don't allow vending, and then take the mean of the `entry` variable. The result is the parameter of interest.
+
+```{r}
+Transit_df %>% 
+  filter(vending == "NO") %>% 
+  pull(entry) %>% 
+  mean
+```
+
+Turns out, the proportion of station entrances / exits without vending allow entrance is about 0.377
 
