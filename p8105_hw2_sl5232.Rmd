@@ -10,3 +10,27 @@ output: github_document
 library(tidyverse)
 library(readxl)
 ```
+
+## Problem 1
+
+Import data from `NYC_Transit_Subway_Entrance_And_Exit_Data.csv`. Then clean variable names and selects the interested column of variables. Using the `recode()` argument to change the entry variable from `YES` / `NO` to a logical variable. Also change the route 8-11 data type from double to character as the route 1-7 data.
+
+```{r }
+Transit_df = 
+  read_csv(
+    "data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
+    col_types = cols(Route8 = "c", Route9 = "c", Route10 = "c", Route11 = "c")) %>% 
+  janitor::clean_names() %>% 
+  select(
+    line, station_name, station_latitude, station_longitude, 
+    starts_with("route"), entry, exit_only, vending, entrance_type, 
+    ada) %>% 
+  mutate(entry = recode(entry, "YES" = TRUE, "NO" = FALSE))
+```
+
+
+
+```{r}
+
+```
+
