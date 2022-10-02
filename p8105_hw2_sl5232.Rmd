@@ -86,19 +86,39 @@ Turns out, there are 60 stations that serve the A train and 17 stations that ser
 
 ## Problem 2
 
-Import two data sheets from `Trash-Wheel-Collection-Totals-7-2020-2.xlsx`, clean the names od the variables and filter out only dumpster-specific data. Round the number of sports balls to the nearest integer and converts the result to an integer variable. 
+Import two data sheets from `Trash-Wheel-Collection-Totals-7-2020-2.xlsx`, clean the names od the variables and filter out only dumpster-specific data. Round the number of sports balls to the nearest integer and converts the result to an integer variable. Rename variable name "dumpster" into "dumpster_number" for clarity. Add a new variable called `wheel_name` to keep track of which trash wheel does the data belong to.
 
-```{r}
+```{r chunk_clean2}
 mr_trash_df = 
   read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = 1, range = "A2:N534") %>% 
   janitor::clean_names() %>% 
   filter(dumpster != "NA") %>% 
-  mutate(sports_balls = as.integer(round(sports_balls)))
+  mutate(sports_balls = as.integer(round(sports_balls))) %>% 
+  mutate(wheel_name = "mr_trash") %>% 
+  rename(dumpster_number = dumpster)
 
 professor_trash_df = 
   read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = 2, range = "A2:N116") %>%
   janitor::clean_names() %>% 
   filter(dumpster != "NA") %>% 
-  mutate(sports_balls = as.integer(round(sports_balls)))
+  mutate(sports_balls = as.integer(round(sports_balls))) %>% 
+  mutate(wheel_name = "professor_trash") %>% 
+  rename(dumpster_number = dumpster)
 ```
 
+Combine both data sheets to produce a single tidy dataset, .
+
+```{r chunk_join}
+trash_wheel_df = 
+  full_join(mr_trash_df, professor_trash_df, by = "wheel_name")
+```
+
+```{r chunk_calculation2}
+total_weight = pull(professor_trash_df, weight_tons) %>% 
+  sum
+```
+
+The total number of observations in the resulting dataset is 524, key variables include the dumpster number, the date, weight in tons, volume in cubic yards, type of the trash, and homes powered. The total weight of trash collected by Professor Trash Wheel is 135.5 tons. 
+# What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
+
+## Problem 3
