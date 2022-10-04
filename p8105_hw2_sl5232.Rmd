@@ -122,12 +122,43 @@ trash_wheel_df
 ```{r chunk_calc2}
 total_weight = pull(professor_trash_df, "weight(tons)") %>% 
   sum
+total_weight
 filter_df = mr_trash_df %>% 
   filter(year == '2020') 
 ball_weight = pull(filter_df, sports_balls) %>% 
   sum
+ball_weight
 ```
 
 The total number of observations in the resulting dataset is 524, key variables include the dumpster number, the date, weight in tons, volume in cubic yards, types of trash collected and the amount of each type of trash collected, and homes the trash wheel powered. The total weight of trash collected by Professor Trash Wheel is 135.5 tons. The total number of sports balls collected by Mr.Trash Wheel in 2020 was 856.
 
 ## Problem 3
+ 
+Import and clean the data in pols-month.csv, snp.csv, and unemployment.csv. For pols_df, break the variable mon into interger variables year, month, and day. Replace month number with month name, and created a `president` variable taking values `gop` and `dem`. Removed `prez_dem`, `prez_gop`, and the dat variable. Cleaned snp_df with a similar fashion, and organized so variables `year` and `month` are in the leading columns. Tidy the unemployment data by switching it from "wide" to "long" format and make the month variable in the same expression style as the other two data frames.
+         
+```{r load_problem3}
+pols_df = 
+  read_csv('data/fivethirtyeight_datasets/pols-month.csv') %>% 
+  janitor::clean_names() %>% 
+  separate(mon, c('year', 'month', 'day')) %>% 
+  mutate(year = as.integer(year),month = as.integer(month),day = as.integer(day)) %>% 
+  mutate(month = month.name[month], president = recode(prez_gop, "1" = "gop", "0" = "dem")) %>% 
+  select(-c("prez_gop", "prez_dem", "day")) 
+
+snp_df = 
+  read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
+  janitor::clean_names() %>% 
+  separate(date, into = c('month', 'day', 'year')) %>% 
+  mutate(year = as.integer(year),month = month.name[as.integer(month)],day = as.integer(day)) %>% 
+  select(year, month, everything(),-c("day")) 
+
+umemployment_df = 
+  read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
+  pivot_longer(
+    cols = Jan:Dec,
+    names_to = "month",
+    values_to = "unemployment rate") %>% 
+  mutate(month = month.name[match(month,month.abb)]) %>% 
+  janitor::clean_names()
+```
+
