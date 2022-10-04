@@ -110,13 +110,13 @@ professor_trash_df =
          "volume(cubic yards)" = volume_cubic_yards)
 ```
 
-Combine both data sheets to produce a single tidy dataset, .
+Combine both data sheets to produce a single tidy dataset .
 
 ```{r}
 trash_wheel_df = 
   bind_rows(mr_trash_df, professor_trash_df) %>% 
-  arrange(dumpster_number, increasing = TRUE)
-trash_wheel_df
+  arrange(dumpster_number, increasing = TRUE) %>% 
+  relocate(dumpster_number, wheel_name, everything())
 ```
 
 ```{r chunk_calc2}
@@ -125,12 +125,12 @@ total_weight = pull(professor_trash_df, "weight(tons)") %>%
 total_weight
 filter_df = mr_trash_df %>% 
   filter(year == '2020') 
-ball_weight = pull(filter_df, sports_balls) %>% 
+ball = pull(filter_df, sports_balls) %>% 
   sum
-ball_weight
+ball
 ```
 
-The total number of observations in the resulting dataset is 524, key variables include the dumpster number, the date, weight in tons, volume in cubic yards, types of trash collected and the amount of each type of trash collected, and homes the trash wheel powered. The total weight of trash collected by Professor Trash Wheel is 135.5 tons. The total number of sports balls collected by Mr.Trash Wheel in 2020 was 856.
+The total number of observations in the resulting dataset is 524, key variables include the dumpster number, the date, weight in tons, volume in cubic yards, types of trash collected and the amount of each type of trash collected, and homes the trash wheel powered. The total weight of trash collected by Professor Trash Wheel is 190.12 tons. The total number of sports balls collected by Mr.Trash Wheel in 2020 was 856.
 
 ## Problem 3
  
@@ -140,7 +140,7 @@ Import and clean the data in pols-month.csv, snp.csv, and unemployment.csv. For 
 pols_df = 
   read_csv('data/fivethirtyeight_datasets/pols-month.csv') %>% 
   janitor::clean_names() %>% 
-  separate(mon, c('year', 'month', 'day')) %>% 
+  separate(mon, c('year', 'month', 'day'), convert = TRUE) %>% 
   mutate(year = as.integer(year),month = as.integer(month),day = as.integer(day)) %>% 
   mutate(month = month.name[month], president = recode(prez_gop, "1" = "gop", "0" = "dem")) %>% 
   select(-c("prez_gop", "prez_dem", "day")) 
@@ -148,8 +148,10 @@ pols_df =
 snp_df = 
   read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
   janitor::clean_names() %>% 
-  separate(date, into = c('month', 'day', 'year')) %>% 
-  mutate(year = as.integer(year),month = month.name[as.integer(month)],day = as.integer(day)) %>% 
+  separate(date, c('month', 'day', 'year'), convert = TRUE) %>% 
+  mutate(year = if_else(year > 16 , year + 1900, year + 2000),
+         month = month.name[as.integer(month)],
+         day = as.integer(day)) %>% 
   select(year, month, everything(),-c("day")) 
 
 umemployment_df = 
