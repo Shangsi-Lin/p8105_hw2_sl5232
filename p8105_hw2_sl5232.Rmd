@@ -122,15 +122,13 @@ trash_wheel_df =
 ```{r chunk_calc2}
 total_weight = pull(professor_trash_df, "weight(tons)") %>% 
   sum
-total_weight
 filter_df = mr_trash_df %>% 
   filter(year == '2020') 
 ball = pull(filter_df, sports_balls) %>% 
   sum
-ball
 ```
 
-The total number of observations in the resulting dataset is 524, key variables include the dumpster number, the date, weight in tons, volume in cubic yards, types of trash collected and the amount of each type of trash collected, and homes the trash wheel powered. The total weight of trash collected by Professor Trash Wheel is 190.12 tons. The total number of sports balls collected by Mr.Trash Wheel in 2020 was 856.
+The total number of observations in the resulting dataset is `r nrow(trash_wheel_df)`, key variables include the dumpster number, the date, weight in tons, volume in cubic yards, types of trash collected and the amount of each type of trash collected, and homes the trash wheel powered. The total weight of trash collected by Professor Trash Wheel is `r total_weight` tons. The total number of sports balls collected by Mr.Trash Wheel in 2020 was `r ball`.
 
 ## Problem 3
  
